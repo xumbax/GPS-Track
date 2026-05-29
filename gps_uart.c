@@ -45,14 +45,6 @@ static void gps_uart_serial_deinit(GpsUart* gps_uart) {
     gps_uart->serial_handle = NULL;
 }
 static void gps_uart_parse_nmea(GpsUart* gps_uart, char* line) {
-    // NMEA dump: сохраняем в RAM буфер (запись на диск из основного потока)
-    if(gps_uart->dump_active && gps_uart->dump_count < 30) {
-        strncpy(gps_uart->dump_buf[gps_uart->dump_count], line, 89);
-        gps_uart->dump_buf[gps_uart->dump_count][89] = '\0';
-        gps_uart->dump_count++;
-        if(gps_uart->dump_count >= 30)
-            gps_uart->dump_active = false;
-    }
     switch(minmea_sentence_id(line, false)) {
     case MINMEA_SENTENCE_RMC: {
         struct minmea_sentence_rmc frame;
@@ -169,9 +161,6 @@ GpsUart* gps_uart_enable() {
     gps_uart->speed_units    = MS;
     gps_uart->tz_offset      = 0;
     gps_uart->view_state     = VIEW_NORMAL;
-    gps_uart->dump_active    = false;
-    gps_uart->dump_count     = 0;
-    memset(gps_uart->dump_buf, 0, sizeof(gps_uart->dump_buf));
     gps_uart_init_thread(gps_uart);
     return gps_uart;
 }

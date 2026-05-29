@@ -53,10 +53,6 @@ typedef struct {
     AppView              view_state;
     FuriHalSerialHandle* serial_handle;
     GpsStatus            status;
-    // NMEA dump (буфер в RAM, запись из основного потока)
-    bool                 dump_active;
-    int                  dump_count;
-    char                 dump_buf[30][90]; // 30 строк по 90 байт
 } GpsUart;
 
 void     gps_uart_init_thread(GpsUart* gps_uart);
